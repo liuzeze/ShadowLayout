@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ShadowLayout">
+        <attr name="sl_shadowColor" format="color" />
+        <attr name="sl_nomalShadowColor" format="color" />
+        <attr name="sl_backgroundColor" format="color" />
+        <attr name="sl_nomalBackgroundColor" format="color" />
+        <attr name="sl_strokeColor" format="color" />
+        <attr name="sl_clip_cornerr" format="boolean" />
+        <attr name="sl_nomalStrokeColor" format="color" />
+
+        <attr name="sl_cornerRadius" format="dimension" />
+        <attr name="sl_shadowBlur" format="dimension" />
+        <attr name="sl_offsetX" format="dimension" />
+        <attr name="sl_offsetY" format="dimension" />
+        <attr name="sl_leftShow" format="boolean" />
+        <attr name="sl_rightShow" format="boolean" />
+        <attr name="sl_topShow" format="boolean" />
+        <attr name="sl_bottomShow" format="boolean" />
+
+    </declare-styleable>
+</resources>
