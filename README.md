@@ -5,7 +5,16 @@
 
 
 ## 使用方式
+
+
+  #### jcenter 引用:
+
+  ```  compile 'com.lz:shadowlayout:1.0.0' ```
+  
+  #### xml 文件使用:
+  
 ```
+
   <lz.com.tools.view.ShadowLayout
         android:id="@+id/ShadowLayout"
         android:layout_width="wrap_content"
