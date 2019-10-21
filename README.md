@@ -19,7 +19,6 @@
         android:id="@+id/ShadowLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
         
         app:sl_clip_cornerr="false"   //内部空间是否要匹配ShadowLayout 的圆角显示,true活将子控件也设置成圆角
         app:sl_backgroundColor="#ff0000"//选中背景色
