@@ -50,5 +50,7 @@ public class ShadowTextView extends AppCompatTextView {
         canvas.restore();
     }
 
-
+    public ShadowHelper getShadowHelper() {
+        return mShadowHelper;
+    }
 }

@@ -10,7 +10,7 @@ publish {
 // jcenter上的路径,bintray上创建Package时填写的Version control项
     artifactId = 'shadowlayout'
 // 项目名称，bintray上创建Package时填写的Name项
-    publishVersion = '1.0.0'
+    publishVersion = '1.0.2'
     desc = '阴影圆角控件'
 // 描述，不重要
     website = 'https://github.com/liuzeze'

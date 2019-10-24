@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
-
 /**
  * @author : liuze
  * @e-mail : 835052259@qq.com
@@ -28,13 +27,13 @@ import android.view.ViewGroup;
 public class ShadowHelper {
 
     private final View mView;
-    private int mUnBackGroundColor;
-    private int mUnShadowColor;
-    private int mStrokeColor;
-    private int mUnStrokeColor;
-
     private int mBackGroundColor;
     private int mShadowColor;
+    private int mStrokeColor;
+    private int mSelectStrokeColor;
+
+    private int mSelectBackGroundColor;
+    private int mSelectShadowColor;
     private float mShadowBlur;
     private float mCornerRadius;
     private float mOffsetX;
@@ -58,6 +57,7 @@ public class ShadowHelper {
     private int mPaddingRight;
     private int mPaddingBottom;
     private boolean mClipCorner;
+    private boolean mSelectEnable;
 
 
     public ShadowHelper(View view, AttributeSet attrs) {
@@ -85,7 +85,7 @@ public class ShadowHelper {
         //边线画笔
         mPaintStroke = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaintStroke.setStyle(Paint.Style.STROKE);
-        mPaintStroke.setColor(mUnStrokeColor);
+        mPaintStroke.setColor(mStrokeColor);
         mPaintStroke.setStrokeWidth(2);
 
 
@@ -133,12 +133,35 @@ public class ShadowHelper {
             //y轴偏移量
             mOffsetY = attr.getDimension(R.styleable.ShadowLayout_sl_offsetY, 8);
 
-            mShadowColor = attr.getColor(R.styleable.ShadowLayout_sl_shadowColor, Color.parseColor("#55ff0000"));
-            mUnShadowColor = attr.getColor(R.styleable.ShadowLayout_sl_nomalShadowColor, Color.TRANSPARENT);
-            mBackGroundColor = attr.getColor(R.styleable.ShadowLayout_sl_backgroundColor, Color.RED);
-            mUnBackGroundColor = attr.getColor(R.styleable.ShadowLayout_sl_nomalBackgroundColor, Color.WHITE);
+            mBackGroundColor = attr.getColor(R.styleable.ShadowLayout_sl_backgroundColor, Color.TRANSPARENT);
             mStrokeColor = attr.getColor(R.styleable.ShadowLayout_sl_strokeColor, Color.TRANSPARENT);
-            mUnStrokeColor = attr.getColor(R.styleable.ShadowLayout_sl_nomalStrokeColor, Color.TRANSPARENT);
+            mShadowColor = attr.getColor(R.styleable.ShadowLayout_sl_shadowColor, Color.TRANSPARENT);
+            if (mShadowColor == Color.TRANSPARENT) {
+                if (mBackGroundColor != Color.TRANSPARENT) {
+                    mShadowColor = mBackGroundColor;
+                } else if (mStrokeColor != Color.TRANSPARENT) {
+                    mShadowColor = mStrokeColor;
+                }
+            }
+
+            mSelectBackGroundColor = attr.getColor(R.styleable.ShadowLayout_sl_selectBackgroundColor, Color.TRANSPARENT);
+            mSelectShadowColor = attr.getColor(R.styleable.ShadowLayout_sl_selectShadowColor, Color.TRANSPARENT);
+            mSelectStrokeColor = attr.getColor(R.styleable.ShadowLayout_sl_selectStrokeColor, Color.TRANSPARENT);
+
+            mSelectEnable = mSelectBackGroundColor != Color.TRANSPARENT
+                    || mSelectShadowColor != Color.TRANSPARENT
+                    || mSelectStrokeColor != Color.TRANSPARENT;
+            if (mSelectEnable) {
+                if (mSelectBackGroundColor == Color.TRANSPARENT) {
+                    mSelectBackGroundColor = mBackGroundColor;
+                }
+                if (mSelectShadowColor == Color.TRANSPARENT) {
+                    mSelectShadowColor = mShadowColor;
+                }
+                if (mSelectStrokeColor == Color.TRANSPARENT) {
+                    mSelectStrokeColor = mStrokeColor;
+                }
+            }
 
 
         } finally {
@@ -188,24 +211,35 @@ public class ShadowHelper {
 
 
     public void setShadowBackground(int w, int h) {
-        Bitmap bitmap = createShadowBitmap(w, h, mCornerRadius, mShadowBlur, mOffsetX, mOffsetY, mShadowColor, mBackGroundColor, mStrokeColor);
-        BitmapDrawable drawable = new BitmapDrawable(bitmap);
 
-
-        Bitmap unBitmap = createShadowBitmap(w, h, mCornerRadius, mShadowBlur, mOffsetX, mOffsetY, mUnShadowColor, mUnBackGroundColor, mUnStrokeColor);
+        Bitmap unBitmap = createShadowBitmap(w, h, mCornerRadius, mShadowBlur, mOffsetX, mOffsetY, mShadowColor, mBackGroundColor, mStrokeColor);
         BitmapDrawable unDrawable = new BitmapDrawable(unBitmap);
 
-        StateListDrawable stateListDrawable = new StateListDrawable();
-        stateListDrawable.addState(new int[]{android.R.attr.state_pressed}, drawable);
-        stateListDrawable.addState(new int[]{android.R.attr.state_checked}, drawable);
-        stateListDrawable.addState(new int[]{android.R.attr.state_selected}, drawable);
-        stateListDrawable.addState(new int[]{}, unDrawable);
 
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN) {
-            mView.setBackgroundDrawable(stateListDrawable);
+        if (mSelectEnable) {
+            Bitmap bitmap = createShadowBitmap(w, h, mCornerRadius, mShadowBlur, mOffsetX, mOffsetY, mSelectShadowColor, mSelectBackGroundColor, mSelectStrokeColor);
+            BitmapDrawable drawable = new BitmapDrawable(bitmap);
+
+
+            StateListDrawable stateListDrawable = new StateListDrawable();
+            stateListDrawable.addState(new int[]{android.R.attr.state_pressed}, drawable);
+            stateListDrawable.addState(new int[]{android.R.attr.state_checked}, drawable);
+            stateListDrawable.addState(new int[]{android.R.attr.state_selected}, drawable);
+            stateListDrawable.addState(new int[]{}, unDrawable);
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN) {
+                mView.setBackgroundDrawable(stateListDrawable);
+            } else {
+                mView.setBackground(stateListDrawable);
+            }
         } else {
-            mView.setBackground(stateListDrawable);
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN) {
+                mView.setBackgroundDrawable(unDrawable);
+            } else {
+                mView.setBackground(unDrawable);
+            }
         }
+
+
     }
 
     private Bitmap createShadowBitmap(int shadowWidth, int shadowHeight, float cornerRadius, float shadowRadius,
@@ -222,10 +256,11 @@ public class ShadowHelper {
                     shadowHeight - shadowRadius - mPaddingBottom);
         } else {
             mShadowRect = new RectF(
-                    shadowRadius ,
-                    shadowRadius ,
-                    shadowWidth - shadowRadius ,
-                    shadowHeight - shadowRadius );        }
+                    shadowRadius,
+                    shadowRadius,
+                    shadowWidth - shadowRadius,
+                    shadowHeight - shadowRadius);
+        }
 
         if (dx > 0) {
             mShadowRect.left += dx;
@@ -337,13 +372,13 @@ public class ShadowHelper {
         return this;
     }
 
-    public ShadowHelper setUnBackGroundColor(int unBackGroundColor) {
-        mUnBackGroundColor = unBackGroundColor;
+    public ShadowHelper setBackGroundColor(int backGroundColor) {
+        mBackGroundColor = backGroundColor;
         return this;
     }
 
-    public ShadowHelper setUnShadowColor(int unShadowColor) {
-        mUnShadowColor = unShadowColor;
+    public ShadowHelper setShadowColor(int shadowColor) {
+        mShadowColor = shadowColor;
         return this;
     }
 
@@ -352,20 +387,19 @@ public class ShadowHelper {
         return this;
     }
 
-    public ShadowHelper setUnStrokeColor(int unStrokeColor) {
-        mUnStrokeColor = unStrokeColor;
-
+    public ShadowHelper setSelectStrokeColor(int selectStrokeColor) {
+        mSelectStrokeColor = selectStrokeColor;
         return this;
     }
 
-    public ShadowHelper setBackGroundColor(int backGroundColor) {
-        mBackGroundColor = backGroundColor;
-
+    public ShadowHelper setSelectBackGroundColor(int selectBackGroundColor) {
+        mSelectBackGroundColor = selectBackGroundColor;
         return this;
     }
 
-    public void setShadowColor(int mShadowColor) {
-        this.mShadowColor = mShadowColor;
+    public ShadowHelper setSelectShadowColor(int selectShadowColor) {
+        mSelectShadowColor = selectShadowColor;
+        return this;
     }
 
     public void setLeftShow(boolean leftShow) {
